@@ -1,0 +1,22 @@
+{
+  "name": "caesar-cipher",
+  "version": "1.0.0",
+  "description": "Implementation of CLI tool that encodes and decodes a text by Caesar cipher",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon src/app.js --shift 5 --input input.txt --output output.txt -a ae --action command"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Sannnao/Caesar-cipher.git"
+  },
+  "author": "Sannnao",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Sannnao/Caesar-cipher/issues"
+  },
+  "homepage": "https://github.com/Sannnao/Caesar-cipher#readme",
+  "devDependencies": {
+    "nodemon": "^2.0.2"
+  }
+}
