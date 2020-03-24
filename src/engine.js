@@ -75,7 +75,6 @@ const encode = (text, shift) => {
     }
   });
 
-  console.log(textArr.join(''));
   return textArr.join('');
 };
 
@@ -95,7 +94,11 @@ const extractText = () => {
         }
       });
     } else {
-      res('A text from stdin');
+      console.log('Write some text to encode or decode...');
+      process.stdin.setEncoding('utf8');
+      process.stdin.on('readable', () => {
+        res(process.stdin.read());
+      });
     }
   });
 };
@@ -105,31 +108,29 @@ const retrieveText = text => {
 
   return new Promise((res, rej) => {
     if (outputOption) {
+      const textArr = text.split(' ');
       const outputFilePath = outputOption.value;
+      const file = fs.createWriteStream(outputFilePath);
 
-      fs.writeFile(outputFilePath, text, err => {
-        if (err) {
-          rej("Can't write to this file!");
-        } else {
-          res('The file was successfully written!');
-        }
-      });
+      for (let i = 0; i < textArr.length; i++) {
+        file.write(`${textArr[i]} `);
+      }
+
+      file.end();
     } else {
+      process.stdout.write(text);
       res('The output to stdout!');
     }
   });
 };
 
-
+// --input C:/Users/Aliaksandr_Piskun/Desktop/input.txt
 // -o C:/Users/Aliaksandr_Piskun/Desktop/output.txt
 
 const executeProgramm = async () => {
   const inputText = await extractText();
 
   const shiftOption = getCommand(passedOptions, SHIFT);
-
-  console.log(inputText);
-
 
   await retrieveText(encode(inputText, +shiftOption.value))
     .then(res => console.log(res))
