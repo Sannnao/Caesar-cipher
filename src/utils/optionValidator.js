@@ -1,5 +1,6 @@
+const checkRequiredCommands = (options, incomingCommands) => {
+  const requiredCommands = options.filter(({ isRequired }) => isRequired);
 
-const checkRequiredCommands = (requiredCommands, incomingCommands) => {
   requiredCommands.forEach(command => {
     const { alias, full } = command;
     if (!(incomingCommands.includes(alias) || incomingCommands.includes(full))) {
@@ -28,23 +29,36 @@ const isDublicateOption = (option, incomingCommands) => {
 };
 
 const searchDublicates = (options, incomingCommands) => {
-  for (let opt in options) {
-    const option = options[opt];
-
-    if (isDublicateOption(option, incomingCommands)) {
+  for (let opt of options) {
+    if (isDublicateOption(opt, incomingCommands)) {
       throw new Error(`Identical options are not accepted!`);
     }
   }
 }
 
 const matchIncomingCommand = (option, command) => {
-  return option.alias === command ||
-         option.full === command;
+  return option.alias === command || option.full === command;
+}
+
+const isProperActionValue = (passedOptions, possibleValues, actionCommand) => {
+  const actionOption = passedOptions.find(({ option }) => {
+    return Object.values(actionCommand).includes(option);
+  });
+
+  const possibleActionValues = Object.values(possibleValues);
+
+  if (!possibleActionValues.includes(actionOption.value)) {
+    throw new Error(
+      `Invalid action value! Possible values is:
+       ${possibleActionValues[0]}/${possibleActionValues[1]}`
+    );
+  };
 }
 
 module.exports = {
   isDublicateOption,
   searchDublicates,
   matchIncomingCommand,
-  checkRequiredCommands
+  checkRequiredCommands,
+  isProperActionValue
 }

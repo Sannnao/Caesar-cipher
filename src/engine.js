@@ -1,59 +1,56 @@
 const options = require('./constants/options');
-const { SHIFT, INPUT, OUTPUT, ACTION } = options;
-const actions = require('./constants/actions');
+const {
+  SHIFT,
+  INPUT,
+  OUTPUT,
+  ACTION,
+} = options;
+const possibleActionValues = require('./constants/actions');
 const {
   checkRequiredCommands,
   searchDublicates,
-  matchIncomingCommand
+  matchIncomingCommand,
+  isProperActionValue
 } = require('./utils/optionValidator');
+
+const optionsArr = [SHIFT,
+INPUT,
+OUTPUT,
+ACTION];
 
 const incomingCommands = process.argv.slice(2);
 
-const requiredCommands = [ACTION, SHIFT];
+checkRequiredCommands(optionsArr, incomingCommands);
 
-checkRequiredCommands(requiredCommands, incomingCommands);
-
-const divideIncomingCommands = incomingCommands => {
+const extractIncomingCommands = (options, incomingCommands) => {
   const dividedCommands = [];
 
   for (let i = 0; i < incomingCommands.length; i++) {
     const command = incomingCommands[i];
     const value = incomingCommands[i + 1];
 
-    switch (true) {
-      case matchIncomingCommand(OUTPUT, command):
+    for (let j = 0; j < options.length; j++) {
+      const option = options[j];
+
+      if (matchIncomingCommand(option, command)) {
         dividedCommands.push({
           option: command,
           value
         });
-        break;
-      case matchIncomingCommand(INPUT, command):
-        dividedCommands.push({
-          option: command,
-          value
-        });
-        break;
-      case matchIncomingCommand(SHIFT, command):
-        dividedCommands.push({
-          option: command,
-          value
-        });
-        break;
-      case matchIncomingCommand(ACTION, command):
-        dividedCommands.push({
-          option: command,
-          value
-        });
-        break;
+      }
     }
   }
 
   return dividedCommands;
 };
 
-console.log(divideIncomingCommands(incomingCommands));
+const passedOptions = extractIncomingCommands(optionsArr, incomingCommands);
 
-searchDublicates(options, incomingCommands);
+isProperActionValue(passedOptions, possibleActionValues, ACTION);
+
+console.log(extractIncomingCommands(optionsArr, incomingCommands));
+
+searchDublicates(optionsArr, incomingCommands);
 
 // console.log(actions, '<===== actions');
 // console.log(incomingCommands, '<===== incomingCommands');
