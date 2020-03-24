@@ -55,10 +55,19 @@ const isProperActionValue = (passedOptions, possibleValues, actionCommand) => {
   };
 }
 
+const isOptionalCommandPassed = (passedOptions, command) => {
+  const checkOption = passedOptions.find(({ option }) => {
+    return Object.values(command).includes(option);
+  })
+
+  return checkOption;
+}
+
 module.exports = {
   isDublicateOption,
   searchDublicates,
   matchIncomingCommand,
   checkRequiredCommands,
-  isProperActionValue
+  isProperActionValue,
+  isOptionalCommandPassed
 }
