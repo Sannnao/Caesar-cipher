@@ -1,7 +1,16 @@
+
+const checkRequiredCommands = (requiredCommands, incomingCommands) => {
+  requiredCommands.forEach(command => {
+    const { alias, full } = command;
+    if (!(incomingCommands.includes(alias) || incomingCommands.includes(full))) {
+      const commandName = full.slice(2);
+      throw new Error(`Missed required command! ====> ${commandName}`);
+    }
+  })
+};
+
 const isDublicateOption = (option, incomingCommands) => {
   const optionsCache = {};
-
-  console.log(option);
 
   incomingCommands.forEach(item => {
     if (optionsCache[item]) {
@@ -11,14 +20,31 @@ const isDublicateOption = (option, incomingCommands) => {
     }
   });
 
-  isThereDublication = Object.keys(optionsCache).some(item => optionsCache[item] > 1);
+  isThereDublication = Object.keys(optionsCache)
+    .some(item => optionsCache[item] > 1);
 
-  console.log(optionsCache, incomingCommands.includes(option.alias) && incomingCommands.includes(option.full));
-  console.log(option.alias, option.full);
+  return incomingCommands.includes(option.alias) &&
+   (incomingCommands.includes(option.full) || isThereDublication);
+};
 
-  return incomingCommands.includes(option.alias) && incomingCommands.includes(option.full) || isThereDublication;
+const searchDublicates = (options, incomingCommands) => {
+  for (let opt in options) {
+    const option = options[opt];
+
+    if (isDublicateOption(option, incomingCommands)) {
+      throw new Error(`Identical options are not accepted!`);
+    }
+  }
+}
+
+const matchIncomingCommand = (option, command) => {
+  return option.alias === command ||
+         option.full === command;
 }
 
 module.exports = {
-  isDublicateOption
+  isDublicateOption,
+  searchDublicates,
+  matchIncomingCommand,
+  checkRequiredCommands
 }

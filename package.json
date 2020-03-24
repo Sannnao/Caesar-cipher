@@ -4,7 +4,7 @@
   "description": "Implementation of CLI tool that encodes and decodes a text by Caesar cipher",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon src/app.js --shift 5 --input input.txt --output output.txt -a ae --action command"
+    "start": "nodemon src/app.js  fawef --baefw aef --input input.txt --output output.txt --action command"
   },
   "repository": {
     "type": "git",
