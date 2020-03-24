@@ -6,7 +6,7 @@ const {
   searchDublicates,
   matchIncomingCommand,
   isProperActionValue,
-  isOptionalCommandPassed
+  getCommand
 } = require('./utils/optionValidator');
 const fs = require('fs');
 
@@ -79,23 +79,12 @@ const encode = (text, shift) => {
   return textArr.join('');
 };
 
-const getIncomingText = () => {
-  const inputOption = isOptionalCommandPassed(passedOptions, INPUT);
-  const shiftOption = passedOptions.find(({ option }) => {
-    return Object.values(SHIFT).includes(option);
-  });
+const extractText = () => {
+  const inputOption = getCommand(passedOptions, INPUT);
 
-  const outputOption = passedOptions.find(({ option }) => {
-    return Object.values(OUTPUT).includes(option);
-  });
-
-  let textContent;
-
-  if (inputOption) {
-    const inputFilePath = inputOption.value;
-    const outputFilePath = outputOption.value;
-
-    new Promise((res, rej) => {
+  return new Promise((res, rej) => {
+    if (inputOption) {
+      const inputFilePath = inputOption.value;
       fs.readFile(inputFilePath, 'utf-8', (err, data) => {
         if (err) {
           rej(
@@ -105,35 +94,48 @@ const getIncomingText = () => {
           res(data);
         }
       });
-    })
-      .then(res => {
-        console.log(res);
-
-        return encode(res, +shiftOption.value);
-      })
-      .then(responce => {
-        return new Promise((resolve, rej) => {
-          fs.writeFile(outputFilePath, responce, (err) => {
-            if (err) {
-              rej('Can\'t write to this file!');
-            } else {
-              resolve('The file was successfully written!');
-            }
-          });
-        });
-      })
-      .then(res => console.log(res))
-      .catch(err => {
-        throw new Error(err);
-      });
-  } else {
-    textContent = 'A text from stdin';
-  }
-  console.log(textContent);
-
-  return textContent;
+    } else {
+      res('A text from stdin');
+    }
+  });
 };
 
-console.log(getIncomingText());
+const retrieveText = text => {
+  const outputOption = getCommand(passedOptions, OUTPUT);
 
-console.log(rangeOfSymbols);
+  return new Promise((res, rej) => {
+    if (outputOption) {
+      const outputFilePath = outputOption.value;
+
+      fs.writeFile(outputFilePath, text, err => {
+        if (err) {
+          rej("Can't write to this file!");
+        } else {
+          res('The file was successfully written!');
+        }
+      });
+    } else {
+      res('The output to stdout!');
+    }
+  });
+};
+
+
+// -o C:/Users/Aliaksandr_Piskun/Desktop/output.txt
+
+const executeProgramm = async () => {
+  const inputText = await extractText();
+
+  const shiftOption = getCommand(passedOptions, SHIFT);
+
+  console.log(inputText);
+
+
+  await retrieveText(encode(inputText, +shiftOption.value))
+    .then(res => console.log(res))
+    .catch(err => {
+      throw new Error(err);
+    });
+};
+
+executeProgramm();
