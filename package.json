@@ -4,7 +4,7 @@
   "description": "Implementation of CLI tool that encodes and decodes a text by Caesar cipher",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon src/app.js -a encode --shift 1"
+    "start": "nodemon src/app.js -a decode --shift 12412 --input C:/Users/Aliaksandr_Piskun/Desktop/input.txt -o C:/Users/Aliaksandr_Piskun/Desktop/output.txt"
   },
   "repository": {
     "type": "git",
@@ -18,5 +18,8 @@
   "homepage": "https://github.com/Sannnao/Caesar-cipher#readme",
   "devDependencies": {
     "nodemon": "^2.0.2"
+  },
+  "dependencies": {
+    "chalk": "^3.0.0"
   }
 }
