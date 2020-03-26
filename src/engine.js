@@ -1,7 +1,6 @@
 const options = require('./constants/options');
 const { SHIFT, INPUT, OUTPUT, ACTION } = options;
 const possibleActionValues = require('./constants/actions');
-const { DECODE, ENCODE } = possibleActionValues;
 const {
   checkRequiredCommands,
   searchDublicates,
@@ -10,6 +9,7 @@ const {
   getCommand
 } = require('./utils/optionValidator');
 const fs = require('fs');
+const cipher = require('./tools/cipher');
 
 const optionsArr = [SHIFT, INPUT, OUTPUT, ACTION];
 
@@ -48,69 +48,6 @@ console.log(extractIncomingCommands(optionsArr, incomingCommands));
 
 // console.log(actions, '<===== actions');
 // console.log(incomingCommands, '<===== incomingCommands');
-
-const rangeOfSymbols = [];
-
-const startSymbol = 'a'.charCodeAt(0);
-const endSymbol = 'z'.charCodeAt(0);
-
-for (let i = startSymbol; i <= endSymbol; i++) {
-  rangeOfSymbols.push(String.fromCharCode(i));
-}
-
-const cipher = (text, shift, action) => {
-  const textArr = text.split('');
-
-  const encode = (symbol, indexOfSymbol, currentIndex) => {
-    const overflow = (indexOfSymbol + shift) % rangeOfSymbols.length;
-
-    const codeOfEncodedSymbol = rangeOfSymbols[overflow].charCodeAt(0);
-    const difference = codeOfEncodedSymbol - symbol.toLowerCase().charCodeAt(0);
-
-    textArr[currentIndex] = String.fromCharCode(
-      symbol.charCodeAt(0) + difference
-    );
-  };
-
-  const decode = (symbol, indexOfSymbol, currentIndex) => {
-    let indexOfDecodedSymbol = indexOfSymbol - shift;
-
-    if (shift > rangeOfSymbols.length) {
-      indexOfDecodedSymbol = indexOfSymbol - (shift % rangeOfSymbols.length);
-    }
-
-    if (indexOfDecodedSymbol < 0) {
-      indexOfDecodedSymbol =
-        rangeOfSymbols.length - Math.abs(indexOfDecodedSymbol);
-    }
-
-    const codeOfDecodedSymbol = rangeOfSymbols[indexOfDecodedSymbol].charCodeAt(
-      0
-    );
-    const difference = symbol.toLowerCase().charCodeAt(0) - codeOfDecodedSymbol;
-
-    textArr[currentIndex] = String.fromCharCode(symbol.charCodeAt(0) - difference);
-  };
-
-  textArr.forEach((symbol, index) => {
-    if (rangeOfSymbols.includes(symbol.toLowerCase())) {
-      const indexOfSymbol = rangeOfSymbols.indexOf(symbol.toLowerCase());
-
-      switch(action) {
-        case ENCODE:
-          encode(symbol, indexOfSymbol, index);
-          break;
-        case DECODE:
-          decode(symbol, indexOfSymbol, index);
-          break;
-      }
-    }
-  });
-
-  return textArr.join('');
-};
-// Content from my desktop (AMAZING!!!) z
-//Dpoufou gspn nz eftlupq (BNBAJOH!!!) a
 
 const extractText = () => {
   const inputOption = getCommand(passedOptions, INPUT);
