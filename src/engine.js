@@ -58,20 +58,52 @@ for (let i = startSymbol; i <= endSymbol; i++) {
   rangeOfSymbols.push(String.fromCharCode(i));
 }
 
-const encode = (text, shift) => {
+const cipher = (text, shift, action) => {
   const textArr = text.split('');
 
-  console.log(rangeOfSymbols.length);
+  const encode = (symbol, indexOfSymbol, currentIndex) => {
+    const overflow = (indexOfSymbol + shift) % rangeOfSymbols.length;
+
+    const codeOfEncodedSymbol = rangeOfSymbols[overflow].charCodeAt(0);
+    const difference = codeOfEncodedSymbol - symbol.toLowerCase().charCodeAt(0);
+
+    textArr[currentIndex] = String.fromCharCode(
+      symbol.charCodeAt(0) + difference
+    );
+  };
+
+  const decode = (symbol, indexOfSymbol, currentIndex) => {
+    let indexOfDecodedSymbol = indexOfSymbol - shift;
+
+    if (shift > rangeOfSymbols.length) {
+      indexOfDecodedSymbol = indexOfSymbol - (shift % rangeOfSymbols.length);
+    }
+
+    if (indexOfDecodedSymbol < 0) {
+      indexOfDecodedSymbol =
+        rangeOfSymbols.length - Math.abs(indexOfDecodedSymbol);
+    }
+
+    const codeOfDecodedSymbol = rangeOfSymbols[indexOfDecodedSymbol].charCodeAt(
+      0
+    );
+    const difference = symbol.toLowerCase().charCodeAt(0) - codeOfDecodedSymbol;
+
+    textArr[currentIndex] = String.fromCharCode(symbol.charCodeAt(0) - difference);
+  };
+
   textArr.forEach((symbol, index) => {
     if (rangeOfSymbols.includes(symbol.toLowerCase())) {
       const indexOfSymbol = rangeOfSymbols.indexOf(symbol.toLowerCase());
 
-      const overflow = (indexOfSymbol + shift) % rangeOfSymbols.length;
-
-      const codeOfEncodedSymbol = rangeOfSymbols[overflow].charCodeAt(0);
-      const difference = codeOfEncodedSymbol - symbol.toLowerCase().charCodeAt(0);
-
-      textArr[index] = String.fromCharCode(symbol.charCodeAt(0) + difference);
+      switch(action) {
+        case ENCODE:
+          encode(symbol, indexOfSymbol, index);
+          break;
+        case DECODE:
+          decode(symbol, indexOfSymbol, index);
+          break;
+      }
     }
   });
 
@@ -79,35 +111,6 @@ const encode = (text, shift) => {
 };
 // Content from my desktop (AMAZING!!!) z
 //Dpoufou gspn nz eftlupq (BNBAJOH!!!) a
-const decode = (text, shift) => {
-  const textArr = text.split('');
-
-  textArr.forEach((symbol, index) => {
-    if (rangeOfSymbols.includes(symbol.toLowerCase())) {
-      const indexOfSymbol = rangeOfSymbols.indexOf(symbol.toLowerCase());
-
-
-      let indexOfDecodedSymbol = indexOfSymbol - shift;
-
-      if (shift > rangeOfSymbols.length) {
-        indexOfDecodedSymbol = indexOfSymbol - shift % rangeOfSymbols.length;
-      }
-
-      if (indexOfDecodedSymbol < 0) {
-        indexOfDecodedSymbol = rangeOfSymbols.length - Math.abs(indexOfDecodedSymbol);
-      }
-
-      console.log(symbol, indexOfDecodedSymbol, 'indexOfDecodedSymbol', rangeOfSymbols[indexOfDecodedSymbol]);
-
-      const codeOfDecodedSymbol = rangeOfSymbols[indexOfDecodedSymbol].charCodeAt(0);
-      const difference = symbol.toLowerCase().charCodeAt(0) - codeOfDecodedSymbol;
-
-      textArr[index] = String.fromCharCode(symbol.charCodeAt(0) - difference);
-    }
-  });
-
-  return textArr.join('');
-}
 
 const extractText = () => {
   const inputOption = getCommand(passedOptions, INPUT);
@@ -164,15 +167,7 @@ const executeProgramm = async () => {
   const shiftOption = getCommand(passedOptions, SHIFT);
   const actionOption = getCommand(passedOptions, ACTION);
 
-  let operation;
-
-  if (actionOption.value === ENCODE) {
-    operation = encode;
-  } else if (actionOption.value === DECODE) {
-    operation = decode;
-  }
-
-  await retrieveText(operation(inputText, +shiftOption.value))
+  retrieveText(cipher(inputText, +shiftOption.value, actionOption.value))
     .then(res => console.log(res))
     .catch(err => {
       throw new Error(err);
