@@ -5,7 +5,10 @@ const checkRequiredCommands = (options, incomingCommands) => {
     const { alias, full } = command;
     if (!(incomingCommands.includes(alias) || incomingCommands.includes(full))) {
       const commandName = full.slice(2);
-      throw new Error(`Missed required command! ====> ${commandName}`);
+      process.stderr.write(
+        `Missed required command! ====> ${commandName}\n`,
+      );
+      process.exit(235);
     }
   })
 };
@@ -21,8 +24,8 @@ const isDublicateOption = (option, incomingCommands) => {
     }
   });
 
-  isThereDublication = Object.keys(optionsCache)
-    .some(item => optionsCache[item] > 1);
+  isThereDublication = Object.values(optionsCache)
+    .some(item => item > 1);
 
   return incomingCommands.includes(option.alias) &&
    (incomingCommands.includes(option.full) || isThereDublication);
