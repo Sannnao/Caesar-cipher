@@ -1,7 +1,7 @@
 const rangeOfSymbols = require('../constants/rangeOfSymbols');
 const { DECODE, ENCODE } = require('../constants/actions');
 
-const encode = (textArr, symbol, indexOfSymbol, currentIndex) => {
+const encode = (textArr, symbol, indexOfSymbol, currentIndex, shift) => {
   const overflow = (indexOfSymbol + shift) % rangeOfSymbols.length;
 
   const codeOfEncodedSymbol = rangeOfSymbols[overflow].charCodeAt(0);
@@ -32,25 +32,31 @@ const decode = (textArr, symbol, indexOfSymbol, currentIndex, shift) => {
   textArr[currentIndex] = String.fromCharCode(symbol.charCodeAt(0) - difference);
 };
 
-const cipher = (text, shift, action) => {
-  const textArr = text.split('');
+const cipher = (dataArr, shift, action) => {
+  const codedArr = [];
 
-  textArr.forEach((symbol, index) => {
-    if (rangeOfSymbols.includes(symbol.toLowerCase())) {
-      const indexOfSymbol = rangeOfSymbols.indexOf(symbol.toLowerCase());
+  dataArr.forEach(chunk => {
+    const textArr = chunk.toString().split('');
 
-      switch(action) {
-        case ENCODE:
-          encode(textArr, symbol, indexOfSymbol, index, shift);
-          break;
-        case DECODE:
-          decode(textArr, symbol, indexOfSymbol, index, shift);
-          break;
+    textArr.forEach((symbol, index) => {
+      if (rangeOfSymbols.includes(symbol.toLowerCase())) {
+        const indexOfSymbol = rangeOfSymbols.indexOf(symbol.toLowerCase());
+
+        switch(action) {
+          case ENCODE:
+            encode(textArr, symbol, indexOfSymbol, index, shift);
+            break;
+          case DECODE:
+            decode(textArr, symbol, indexOfSymbol, index, shift);
+            break;
+        }
       }
-    }
-  });
+    });
 
-  return textArr.join('');
+    codedArr.push(textArr.join(''));
+  })
+
+  return codedArr;
 };
 
 module.exports = cipher;

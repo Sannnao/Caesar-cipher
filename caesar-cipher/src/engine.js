@@ -1,3 +1,5 @@
+const fs = require('fs');
+const cipher = require('./tools/cipher');
 const options = require('./constants/options');
 const { SHIFT, INPUT, OUTPUT, ACTION } = options;
 const possibleActionValues = require('./constants/actions');
@@ -8,8 +10,7 @@ const {
   isProperActionValue,
   getCommand
 } = require('./utils/optionValidator');
-const fs = require('fs');
-const cipher = require('./tools/cipher');
+const { writeToStream } = require('./utils/streamUtils');
 
 const optionsArr = [SHIFT, INPUT, OUTPUT, ACTION];
 
@@ -50,20 +51,30 @@ const extractText = action => {
   return new Promise((res, rej) => {
     if (inputOption) {
       const inputFilePath = inputOption.value;
-      fs.readFile(inputFilePath, 'utf-8', (err, data) => {
-        if (err) {
-          process.stderr.write(
-            'The specified file does not exist or the path is incorrect or there are no rights to read file!\n',
-            () => process.exit(214)
-          );
-        } else {
-          res(data);
-        }
+      const readable = fs.createReadStream(inputFilePath);
+
+      const dataArr = [];
+
+      readable.on('data', (data) => {
+        dataArr.push(data);
       });
+
+      readable.on('end', () => {
+        res(dataArr);
+      })
+      // fs.readFile(inputFilePath, 'utf-8', (err, data) => {
+      //   if (err) {
+      //     process.stderr.write(
+      //       'The specified file does not exist or the path is incorrect or there are no rights to read file!\n',
+      //       () => process.exit(214)
+      //     );
+      //   } else {
+      //     res(data);
+      //   }
+      // });
     } else {
       console.log(`Write some text to ${action}...`);
       process.stdin.setEncoding('utf8');
-      process.openStdin();
       process.stdin.on('data', data => {
         res(data);
       });
@@ -71,21 +82,29 @@ const extractText = action => {
   });
 };
 
-const retrieveText = text => {
+const retrieveText = textArr => {
   const outputOption = getCommand(passedOptions, OUTPUT);
 
   return new Promise((res, rej) => {
     if (outputOption) {
-      const textArr = text.split(' ');
+      // const chunk = 'Hello, world! '.repeat(5).concat('\n');
       const outputFilePath = outputOption.value;
       const file = fs.createWriteStream(outputFilePath, { flags: 'a' });
 
-      for (let i = 0; i < textArr.length; i++) {
-        file.write(`${textArr[i]} `);
+      // file.on('close');
+
+      function start(n) {
+        if (n === textArr.length - 1) {
+          return file.end(textArr[textArr.length - 1]);
+        } else {
+          writeToStream(file, textArr[n], () => start(++n));
+        }
       }
 
-      file.write('\n');
-      file.end();
+      start(0);
+
+      // file.write('\n');
+      // file.end();
     } else {
       process.stdout.write(text);
     }
@@ -99,15 +118,19 @@ const executeProgramm = async () => {
   const shiftOption = getCommand(passedOptions, SHIFT);
   const actionOption = getCommand(passedOptions, ACTION);
 
-  const inputText = await extractText(actionOption.value);
+  const inputDataArr = await extractText(actionOption.value);
+  console.log(inputDataArr.length);
+  const ciphred = await cipher(inputDataArr, +shiftOption.value, actionOption.value);
 
-  retrieveText(cipher(inputText, +shiftOption.value, actionOption.value))
+  console.log(ciphred.length);
+
+  retrieveText(ciphred)
     .then(res => console.log(res))
     .catch(err => {
       throw new Error(err);
     });
 
-  executeProgramm();
+  // executeProgramm();
 };
 
 executeProgramm();

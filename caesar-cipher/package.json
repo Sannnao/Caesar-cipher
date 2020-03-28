@@ -4,8 +4,8 @@
   "description": "Implementation of CLI tool that encodes and decodes a text by Caesar cipher",
   "main": "index.js",
   "scripts": {
-    "start": "node src/app.js -a decode --shift 12412" ,
-    "dev": "nodemon src/app.js -a decode --shift 12412 --input -o C:/Users/Aliaksandr_Piskun/Desktop/output.txt"
+    "start": "node src/app.js -a encode --shift 1 -i input.txt -o output.txt",
+    "dev": "nodemon src/app.js -a decode --shift 12412 --input -o C:/Users/sannn/OneDrive/Рабочий стол/output.txt"
   },
   "repository": {
     "type": "git",

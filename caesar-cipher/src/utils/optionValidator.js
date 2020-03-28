@@ -16,7 +16,7 @@ const checkRequiredCommands = (options, incomingCommands) => {
 const isDublicateOption = (option, incomingCommands) => {
   const optionsCache = {};
 
-  incomingCommands.forEach(item => {
+  incomingCommands.filter(com => com[0] === '-').forEach(item => {
     if (optionsCache[item]) {
       optionsCache[item]++;
     } else {
