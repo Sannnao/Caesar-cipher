@@ -1,13 +1,12 @@
 const options = require('./constants/options');
-const chalk = require('chalk');
 const { pipeline } = require('stream');
 const { SHIFT, INPUT, OUTPUT, ACTION } = options;
 const optionsArr = [SHIFT, INPUT, OUTPUT, ACTION];
-const possibleActionValues = require('./constants/actions');
 const {
   checkRequiredCommands,
   searchDublicates,
   isProperActionValue,
+  isProperShiftValue,
   extractIncomingCommands
 } = require('./utils/optionValidator');
 const {
@@ -20,7 +19,8 @@ const incomingCommands = process.argv.slice(2);
 checkRequiredCommands(optionsArr, incomingCommands);
 searchDublicates(optionsArr, incomingCommands);
 const passedOptions = extractIncomingCommands(optionsArr, incomingCommands);
-isProperActionValue(passedOptions, possibleActionValues, ACTION);
+isProperActionValue(passedOptions);
+isProperShiftValue(passedOptions);
 
 async function executeProgramm() {
   const readable = await extractText(passedOptions);

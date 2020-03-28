@@ -1,4 +1,7 @@
-const { error } = require('./chalk');
+const possibleActionValues = require('../constants/actions');
+const { errorChalk } = require('./chalk');
+const error = require('./error');
+const { ACTION, SHIFT } = require('../constants/options');
 
 const checkRequiredCommands = (options, incomingCommands) => {
   const requiredCommands = options.filter(({ isRequired }) => isRequired);
@@ -10,7 +13,7 @@ const checkRequiredCommands = (options, incomingCommands) => {
     ) {
       const commandName = full.slice(2);
       process.stderr.write(
-        error(`Missed required command! ====> ${commandName}\n`)
+        errorChalk(`Missed required command! ====> ${commandName}\n`)
       );
       process.exit(235);
     }
@@ -41,7 +44,7 @@ const isDublicateOption = (option, incomingCommands) => {
 const searchDublicates = (options, incomingCommands) => {
   for (let opt of options) {
     if (isDublicateOption(opt, incomingCommands)) {
-      throw new Error(error(`Identical options are not accepted!`));
+      error(`Identical options are not accepted!`);
     }
   }
 };
@@ -50,22 +53,26 @@ const matchIncomingCommand = (option, command) => {
   return option.alias === command || option.full === command;
 };
 
-const isProperActionValue = (passedOptions, possibleValues, actionCommand) => {
-  const actionOption = passedOptions.find(({ option }) => {
-    return Object.values(actionCommand).includes(option);
-  });
+const isProperActionValue = (passedOptions) => {
+  const actionOption = getCommand(passedOptions, ACTION);
 
-  const possibleActionValues = Object.values(possibleValues);
+  const possibleValues = Object.values(possibleActionValues);
 
-  if (!possibleActionValues.includes(actionOption.value)) {
-    throw new Error(
+  if (!possibleValues.includes(actionOption.value)) {
       error(
         `Invalid action value! Possible values is:
-       ${possibleActionValues[0]}/${possibleActionValues[1]}`
-      )
-    );
+       ${possibleValues[0]}/${possibleValues[1]}`
+      );
   }
 };
+
+const isProperShiftValue = (passedOptions) => {
+  const shiftOption = getCommand(passedOptions, SHIFT);
+
+  if (isNaN(shiftOption.value)) {
+    error('The shift option accepts only numbers as a value!');
+  }
+}
 
 const extractIncomingCommands = (options, incomingCommands) => {
   const dividedCommands = [];
@@ -102,5 +109,6 @@ module.exports = {
   checkRequiredCommands,
   isProperActionValue,
   extractIncomingCommands,
+  isProperShiftValue,
   getCommand
 };

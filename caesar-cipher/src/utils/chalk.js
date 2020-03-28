@@ -1,9 +1,9 @@
 const chalk = require('chalk');
 
-const error = chalk.bgWhite.red.bold;
-const instruction = chalk.bgWhite.magenta.bold;
+const errorChalk = chalk.bgWhite.red.bold;
+const instructionChalk = chalk.bgWhite.magenta.bold;
 
 module.exports = {
-  error,
-  instruction
+  errorChalk,
+  instructionChalk
 }
