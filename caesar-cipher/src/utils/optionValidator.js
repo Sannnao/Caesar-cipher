@@ -58,6 +58,28 @@ const isProperActionValue = (passedOptions, possibleValues, actionCommand) => {
   };
 }
 
+const extractIncomingCommands = (options, incomingCommands) => {
+  const dividedCommands = [];
+
+  for (let i = 0; i < incomingCommands.length; i++) {
+    const command = incomingCommands[i];
+    const value = incomingCommands[i + 1];
+
+    for (let j = 0; j < options.length; j++) {
+      const option = options[j];
+
+      if (matchIncomingCommand(option, command)) {
+        dividedCommands.push({
+          option: command,
+          value
+        });
+      }
+    }
+  }
+
+  return dividedCommands;
+};
+
 const getCommand = (passedOptions, command) => {
   return passedOptions.find(({ option }) => {
     return Object.values(command).includes(option);
@@ -70,5 +92,6 @@ module.exports = {
   matchIncomingCommand,
   checkRequiredCommands,
   isProperActionValue,
+  extractIncomingCommands,
   getCommand
 }

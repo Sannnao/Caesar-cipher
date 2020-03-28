@@ -32,11 +32,8 @@ const decode = (textArr, symbol, indexOfSymbol, currentIndex, shift) => {
   textArr[currentIndex] = String.fromCharCode(symbol.charCodeAt(0) - difference);
 };
 
-const cipher = (dataArr, shift, action) => {
-  const codedArr = [];
-
-  dataArr.forEach(chunk => {
-    const textArr = chunk.toString().split('');
+const cipher = (data, shift, action) => {
+    const textArr = data.toString().split('');
 
     textArr.forEach((symbol, index) => {
       if (rangeOfSymbols.includes(symbol.toLowerCase())) {
@@ -53,10 +50,7 @@ const cipher = (dataArr, shift, action) => {
       }
     });
 
-    codedArr.push(textArr.join(''));
-  })
-
-  return codedArr;
+    return textArr.join('');
 };
 
 module.exports = cipher;
