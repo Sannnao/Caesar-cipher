@@ -16,12 +16,16 @@ const {
 
 const incomingCommands = process.argv.slice(2);
 checkRequiredCommands(optionsArr, incomingCommands);
+searchDublicates(optionsArr, incomingCommands);
 const passedOptions = extractIncomingCommands(optionsArr, incomingCommands);
 isProperActionValue(passedOptions, possibleActionValues, ACTION);
-searchDublicates(optionsArr, incomingCommands);
 
-const readable = extractText(passedOptions);
-const transform = transformText(passedOptions);
-const writable = retrieveText(passedOptions);
+async function executeProgramm() {
+  const readable = await extractText(passedOptions);
+  const transform = transformText(passedOptions);
+  const writable = await retrieveText(passedOptions);
 
-readable.pipe(transform).pipe(writable);
+  readable.pipe(transform).pipe(writable);
+}
+
+executeProgramm();

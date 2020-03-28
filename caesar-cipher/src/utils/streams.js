@@ -10,7 +10,17 @@ const extractText = (passedOptions) => {
 
   if (inputOption) {
     const inputFilePath = inputOption.value;
-    return fs.createReadStream(inputFilePath);
+
+    return new Promise((res, rej) => {
+      fs.access(inputFilePath, (err) => {
+        if (err) {
+          process.stderr.write(`The specified path: "${inputFilePath}" is incorrect or there are no rights to read this file!!\n`);
+          process.exit(453);
+        }
+
+        res(fs.createReadStream(inputFilePath));
+      })
+    });
   } else {
     console.log(`Write some text to ${actionOption.value}...`);
     return process.stdin;
@@ -36,8 +46,17 @@ const retrieveText = (passedOptions) => {
   const outputOption = getCommand(passedOptions, OUTPUT);
   if (outputOption) {
     const outputFilePath = outputOption.value;
-    const file = fs.createWriteStream(outputFilePath, { flags: 'a' });
-    return file;
+
+    return new Promise((res, rej) => {
+      fs.access(outputFilePath, (err) => {
+        if (err) {
+          process.stderr.write(`The specified path: "${outputFilePath}" is incorrect or there are no rights to write to this file!!\n`);
+          process.exit(453);
+        }
+
+        res(fs.createWriteStream(outputFilePath, { flags: 'a' }));
+      })
+    })
   } else {
     return process.stdout;
   }
