@@ -1,5 +1,6 @@
 const fs = require('fs');
 const stream = require('stream');
+const { error, instruction } = require('./chalk');
 const cipher = require('../tools/cipher');
 const { getCommand } = require('./optionValidator');
 const { SHIFT, INPUT, OUTPUT, ACTION } = require('../constants/options');
@@ -14,7 +15,7 @@ const extractText = (passedOptions) => {
     return new Promise((res, rej) => {
       fs.access(inputFilePath, (err) => {
         if (err) {
-          process.stderr.write(`The specified path: "${inputFilePath}" is incorrect or there are no rights to read this file!!\n`);
+          process.stderr.write(error(`The specified path: "${inputFilePath}" is incorrect or there are no rights to read this file!!\n`));
           process.exit(453);
         }
 
@@ -22,7 +23,7 @@ const extractText = (passedOptions) => {
       })
     });
   } else {
-    console.log(`Write some text to ${actionOption.value}...`);
+    console.log(instruction(`Write some text to ${actionOption.value}...`));
     return process.stdin;
   }
 };
@@ -50,7 +51,7 @@ const retrieveText = (passedOptions) => {
     return new Promise((res, rej) => {
       fs.access(outputFilePath, (err) => {
         if (err) {
-          process.stderr.write(`The specified path: "${outputFilePath}" is incorrect or there are no rights to write to this file!!\n`);
+          process.stderr.write(error(`The specified path: "${outputFilePath}" is incorrect or there are no rights to write to this file!!\n`));
           process.exit(453);
         }
 

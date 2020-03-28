@@ -1,4 +1,6 @@
 const options = require('./constants/options');
+const chalk = require('chalk');
+const { pipeline } = require('stream');
 const { SHIFT, INPUT, OUTPUT, ACTION } = options;
 const optionsArr = [SHIFT, INPUT, OUTPUT, ACTION];
 const possibleActionValues = require('./constants/actions');
@@ -25,7 +27,11 @@ async function executeProgramm() {
   const transform = transformText(passedOptions);
   const writable = await retrieveText(passedOptions);
 
-  readable.pipe(transform).pipe(writable);
+  pipeline(
+    readable,
+    transform,
+    writable
+  );
 }
 
 executeProgramm();
