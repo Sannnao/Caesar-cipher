@@ -15,6 +15,6 @@ Node.js CLI tool to encode\decode English alphabet text
    - If this command isn't provided - enter a text to the terminal :cl:
 
 3. ``-o``, ``--output``: an output file (optional). :floppy_disk:
-   - If this command isn't provided - ciphred text will printed in terminal :cl:
+   - If this command isn't provided - a ciphred text will be printed in the terminal :cl:
 
 4. ``-a``, ``--action``: an action encode :arrow_right: /decode :arrow_left:
