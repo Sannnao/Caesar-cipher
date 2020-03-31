@@ -30,7 +30,14 @@ async function executeProgramm() {
   pipeline(
     readable,
     transform,
-    writable
+    writable,
+    (err) => {
+      if (err) {
+        console.error('Ciphering failed!', err);
+      } else {
+        console.log('Ciphering succeeded!');
+      }
+    }
   );
 }
 
