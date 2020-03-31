@@ -1,6 +1,9 @@
 # Caesar-cipher
 Node.js CLI tool to encode\decode English alphabet text
 
+## :snowflake: Before we will start...
+...The task is fully completed before deadline __BUT__ I sudenly recognised an exception from pipline, which found when I ran my program on the another machine, while on the machine where I finished task there was no problems. Also I added clarification in README.md about how to run my program. As the result - I made several commits after deadline. Please, keep it in mind when you will checking my work. Thanks!
+
 ## :grey_question: How to install:
 
 1. Clone this repo
