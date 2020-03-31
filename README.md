@@ -8,6 +8,8 @@ Node.js CLI tool to encode\decode English alphabet text
 3. ``npm install``
 
 ## :grey_question: How to use:
+To run program write: ``node src/app.js <options>``   
+Acceptable options:
 
 1. ``-s``, ``--shift``: a number of character to cipher :slot_machine:
 
